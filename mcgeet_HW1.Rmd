@@ -1,0 +1,159 @@
+---
+title: "Homework 1"
+author: "Teresa McGee"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+###### DO THIS #######
+
+# Set to dir storing rain data frame
+dataDir <- "~/Documents/GitHub/modern-bayes/homeworks/homework-1/data" 
+
+```
+
+
+
+## **Working with data** 
+
+Total points on assignment: 10 (reproducibility) + 22 (Q1) + 9 (Q2) + 3 (Q3) = 44 points 
+
+Reproducibility component: 10 points. 
+
+### 1.  (22 points total, equally weighted) The data set ***rnf6080.dat*** records hourly rainfall at a certain location in Canada, every day from 1960 to 1980.
+
+
+a. Load the data set into R and make it a data frame called \texttt{rain.df}.  What command did you use?
+
+```{r}
+#importing rain dataframe with base R
+rain.df <- read.table(file = paste(dataDir, "rnf6080.dat", sep = "/"))
+
+```
+**Answer: I used a base R function, read.table. There are faster import methods, but this size dataframe does not require it. **
+
+b. How many rows and columns does \texttt{rain.df} have?  How do you know?  (If there are not 5070 rows and 27 columns, you did something wrong in the first part of the problem.)
+
+```{r}
+# checking the dimensions of rain dataframe
+dim(rain.df)
+```
+
+**Answer: There are 5070 rows and 27 columns in the dataset. ** 
+
+c. What command would you use to get the names of the columns of \texttt{rain.df}? What are those names?
+
+```{r}
+colnames(rain.df)
+```
+
+**Answer: As is, the column names are saved as a base R standard of Vn where n is the index of the column. **
+
+d. What command would you use to get the value at row 2, column 4? What is the value?
+
+```{r}
+rain.df[2,4]
+```
+
+**Answer: This can be done by indexing the dataframe. ** 
+
+e. What command would you use to display the whole second row?  What is the content of that row?
+
+```{r}
+rain.df[2,]
+```
+
+**Answer: This is done by indexing the row and leaving the column blank.** 
+
+f.  What does the following command do?
+```{r}
+names(rain.df) <- c("year","month","day",seq(0,23))
+```
+
+**Answer: This command will rename the columns as "year", "month", "day" and the numbers 0-23.**
+
+g.  Create a new column called \texttt{daily}, which is the sum of the 24 hourly columns.
+
+```{r}
+rain.df$daily<- apply(MARGIN = 1, X = rain.df[,4:27], FUN = sum)
+```
+
+h. Give the command you would use to create a histogram of the daily rainfall amounts.  Please make sure to attach your figures in your .pdf report. 
+
+```{r}
+hist(rain.df$daily, breaks = 100,freq = FALSE)
+```
+
+
+i. Explain why that histogram above cannot possibly be right.
+
+**Answer: There is not a possibility of having negative rain, thus there is a reading/ technical error in the dataset.**  
+
+j. Give the command you would use to fix the data frame.
+
+**Answer: There are several enteries of -999 which are likely reading errors of the machine being used. Since we have no insight into these errors, it is best to remove those day's readings.**
+
+```{r}
+
+rain.df<- rain.df[rain.df$daily>0,]
+
+```
+
+
+k. Create a corrected histogram and again include it as part of your submitted report. Explain why it is
+more reasonable than the previous histogram.
+
+```{r}
+hist(rain.df$daily)
+```
+
+
+***Data types***
+
+### 2. (9 points, equally weighted) Make sure your answers to different parts of this problem are compatible with each other.
+
+a. For each of the following commands, either explain why they should be errors, or explain the non-erroneous result.
+```
+x <- c("5","12","7")
+max(x)
+sort(x)
+sum(x)
+```
+
+**Answer: The sum function is only operational on numerical values. The x list is a list of characters.**
+
+b. For the next two commands, either explain their results, or why they
+should produce errors.
+```
+y <- c("5",7,12)
+y[2] + y[3]
+```
+
+**Answer: This results in an error because the + operator needs numeric arguments. R automatically handles and corrects data types, and in the initiation of y, it converted numerics into characters.**
+
+c. For the next two commands, either explain their results, or why they should
+produce errors.
+```
+z <- data.frame(z1="5",z2=7,z3=12)
+z[1,2] + z[1,3]
+```
+
+**Answer: A data frame is a list of independent lists, thus the entries may be different data types. When importing z, the values are types: character, numerical, numerical. When adding the second and third entry you will get 19.**
+
+3. (3 pts, equally weighted). 
+
+a.) What is the point of reproducible code? 
+
+**Answer: Rigor and reproducibility are the foundation of informative and conclusive analyses. Without validating reproducibility, results are not able to be replicated or validated, and it is not clear whether results are correct, or influenced by biases, environments, or analysis that are not presented. This will bias or completely change interpretation of results.**
+
+b.) Given an example of why making your code reproducible is important for you to know in this class and moving forward. 
+
+**Answer: I am a graduate student in Bioinformatics and a lack of reproducibility and transparency in analyses regularly affect my work. Without reproducible analysis, conclusions presented from the analyzers cannot be validated. Analytical methods may be applied improperly. Code that lacks reproducibility and clear notations are difficult to interpret and reapply for others. This means that people using the code in the future will piece apart the code, a time consuming task and a task that may break or unintentionally change the analysis. Within the class, I understand that accurately grading assignments is especially time consuming and difficult if the assignment is not able to run on the grader's computer. **
+
+c.) On a scale of 1 (easy) -- 10 (hard), how hard was this assignment. If this assignment was hard ($>5$), please state in one sentence what you struggled with. 
+
+**Answer: 1 **
+
